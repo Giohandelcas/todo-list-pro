@@ -14,17 +14,19 @@ export const getTasks = async (req, res) => {
 
 // Crear nueva tarea
 export const createTask = async (req, res) => {
-  const userId = req.user.id;
-  const { title, description } = req.body;
-
   try {
+    const { title, description, completed } = req.body;
+    const userId = req.user.id;
+
     const [result] = await db.query(
-      'INSERT INTO tasks (title, description, user_id) VALUES (?, ?, ?)',
-      [title, description, userId]
+      "INSERT INTO tasks (title, description, completed, user_id) VALUES (?, ?, ?, ?)",
+      [title, description, completed, userId]
     );
-    res.status(201).json({ id: result.insertId, title, description });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al crear la tarea' });
+
+    res.status(201).json({ message: "Tarea creada", taskId: result.insertId });
+  } catch (err) {
+    console.error("Error al crear tarea:", err); // 🟢 MUY IMPORTANTE
+    res.status(500).json({ message: "Error al crear la tarea" });
   }
 };
 

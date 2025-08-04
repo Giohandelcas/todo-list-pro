@@ -9,16 +9,18 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-app.use("/api/auth", authRoutes);
-app.use("/api/tasks", taskRoutes);
 
-// Middlewares
+// ✅ Middlewares (deben ir primero)
 app.use(cors());
 app.use(express.json());
 
+// ✅ Rutas
+app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
 
+// Ruta de prueba
 app.get("/", async (req, res) => {
-    try{
+    try {
         const [rows] = await db.query("SELECT NOW() AS now");
         res.send(`Conexión exitosa ✅. Fecha y hora: ${rows[0].now}`)
     } catch (err) {
@@ -26,9 +28,6 @@ app.get("/", async (req, res) => {
     }
 });
 
-// Rutas protegidas para tareas
-app.use("/api/tasks", taskRoutes);
-
 app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`)
-})
+});
